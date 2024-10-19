@@ -2,36 +2,31 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.justifyText = void 0;
 const justifyText = (text) => {
-    const maxLineLength = 80;
-    const words = text.split(/\s+/);
-    let lines = [];
-    let currentLine = [];
-    words.forEach((word) => {
-        let currentLineLength = currentLine.join(" ").length;
-        if (currentLineLength + word.length + 1 <= maxLineLength) {
-            currentLine.push(word);
+    const lines = text.split("\n");
+    const justifiedLines = [];
+    for (const line of lines) {
+        const words = line.split(" ");
+        let currentLine = "";
+        for (const word of words) {
+            // Check if adding the word exceeds the 80-character limit
+            if (currentLine.length + word.length + 1 <= 80) {
+                currentLine += (currentLine ? " " : "") + word;
+            }
+            else {
+                // Add the current line to justifiedLines if it does not exceed 80 characters
+                if (currentLine.length > 0) {
+                    justifiedLines.push(currentLine);
+                }
+                // Start a new line with the current word
+                currentLine = word;
+            }
         }
-        else {
-            lines.push(justifyLine(currentLine, maxLineLength));
-            currentLine = [word];
+        // Push the last line if it exists and is 80 characters or fewer
+        if (currentLine.length > 0) {
+            justifiedLines.push(currentLine);
         }
-    });
-    if (currentLine.length > 0) {
-        lines.push(currentLine.join(" ")); // Last line does not need justification
     }
-    return lines.join("\n");
+    // Filter out any lines that exceed 80 characters
+    return justifiedLines.filter((line) => line.length <= 80).join("\n");
 };
 exports.justifyText = justifyText;
-const justifyLine = (words, maxLength) => {
-    if (words.length === 1)
-        return words[0];
-    let spacesToAdd = maxLength - words.join(" ").length;
-    let gaps = words.length - 1;
-    while (spacesToAdd > 0) {
-        for (let i = 0; i < gaps && spacesToAdd > 0; i++) {
-            words[i] += " ";
-            spacesToAdd--;
-        }
-    }
-    return words.join(" ");
-};
